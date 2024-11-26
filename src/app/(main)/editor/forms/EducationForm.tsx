@@ -1,29 +1,28 @@
-import { Button } from "@/components/ui/button";
 import {
+  Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { EditorFormProps } from "@/lib/types";
-import { workExperienceSchema, WorkExperienceValues } from "@/lib/validation";
+import { educationSchema, EducationValues } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GripHorizontal } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
-import { Form, useFieldArray, useForm, UseFormReturn } from "react-hook-form";
+import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 
-export default function WorkExperienceForm({
+export default function EducationForm({
   resumeData,
   setResumeData,
 }: EditorFormProps) {
-  const form = useForm<WorkExperienceValues>({
-    resolver: zodResolver(workExperienceSchema),
+  const form = useForm<EducationValues>({
+    resolver: zodResolver(educationSchema),
     defaultValues: {
-      workExperiences: resumeData.workExperiences || [],
+      educations: resumeData.educations || [],
     },
   });
 
@@ -33,8 +32,7 @@ export default function WorkExperienceForm({
       if (!isValid) return;
       setResumeData({
         ...resumeData,
-        workExperiences:
-          values.workExperiences?.filter((exp) => exp !== undefined) || [],
+        educations: values.educations?.filter((edu) => edu !== undefined) || [],
       });
     });
     return unsubscribe;
@@ -42,21 +40,21 @@ export default function WorkExperienceForm({
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "workExperiences",
+    name: "educations",
   });
 
   return (
     <div className="mx-auto max-w-xl space-y-6">
       <div className="space-y-1.5 text-center">
-        <h2 className="text-2xl font-bold">職歴</h2>
+        <h2 className="text-2xl font-bold">学歴</h2>
         <p className="text-sm text-muted-foreground">
-          職歴を追加してください。
+          学歴を追加してください。
         </p>
       </div>
       <Form {...form}>
         <form className="space-y-3">
           {fields.map((field, index) => (
-            <WorkExperienceItem
+            <EducationItem
               key={field.id}
               id={field.id}
               form={form}
@@ -69,15 +67,14 @@ export default function WorkExperienceForm({
               type="button"
               onClick={() =>
                 append({
-                  position: "",
-                  company: "",
+                  degree: "",
+                  school: "",
                   startDate: "",
                   endDate: "",
-                  description: "",
                 })
               }
             >
-              職歴を追加
+              学歴を追加
             </Button>
           </div>
         </form>
@@ -86,31 +83,26 @@ export default function WorkExperienceForm({
   );
 }
 
-interface WorkExperienceItemProps {
+interface EducationItemProps {
   id: string;
-  form: UseFormReturn<WorkExperienceValues>;
+  form: UseFormReturn<EducationValues>;
   index: number;
   remove: (index: number) => void;
 }
 
-function WorkExperienceItem({
-  id,
-  form,
-  index,
-  remove,
-}: WorkExperienceItemProps) {
+function EducationItem({ id, form, index, remove }: EducationItemProps) {
   return (
     <div className="space-y-3 rounded-md border bg-background p-3">
       <div className="flex justify-between gap-2">
-        <span className="font-semibold">職歴 {index + 1}</span>
+        <span className="font-semibold">学歴 {index + 1}</span>
         <GripHorizontal className="size-5 cursor-grab text-muted-foreground" />
       </div>
       <FormField
         control={form.control}
-        name={`workExperiences.${index}.position`}
+        name={`educations.${index}.degree`}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>役職</FormLabel>
+            <FormLabel>学位</FormLabel>
             <FormControl>
               <Input {...field} autoFocus />
             </FormControl>
@@ -120,10 +112,10 @@ function WorkExperienceItem({
       />
       <FormField
         control={form.control}
-        name={`workExperiences.${index}.company`}
+        name={`educations.${index}.school`}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>会社名</FormLabel>
+            <FormLabel>学校名</FormLabel>
             <FormControl>
               <Input {...field} />
             </FormControl>
@@ -134,7 +126,7 @@ function WorkExperienceItem({
       <div className="grid grid-cols-2 gap-3">
         <FormField
           control={form.control}
-          name={`workExperiences.${index}.startDate`}
+          name={`educations.${index}.startDate`}
           render={({ field }) => (
             <FormItem>
               <FormLabel>開始日</FormLabel>
@@ -151,7 +143,7 @@ function WorkExperienceItem({
         />
         <FormField
           control={form.control}
-          name={`workExperiences.${index}.endDate`}
+          name={`educations.${index}.endDate`}
           render={({ field }) => (
             <FormItem>
               <FormLabel>終了日</FormLabel>
@@ -167,28 +159,7 @@ function WorkExperienceItem({
           )}
         />
       </div>
-      <FormDescription>
-        現在も勤務中の場合は、<span className="font-semibold">終了日</span>
-        を空欄にしてください。
-      </FormDescription>
-      <FormField
-        control={form.control}
-        name={`workExperiences.${index}.description`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>職務内容</FormLabel>
-            <FormControl>
-              <Textarea {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <Button
-        variant={"destructive"}
-        type="button"
-        onClick={() => remove(index)}
-      >
+      <Button variant="destructive" type="button" onClick={() => remove(index)}>
         削除
       </Button>
     </div>
