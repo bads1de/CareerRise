@@ -13,7 +13,7 @@ interface ColorPickerProps {
   color: Color | undefined;
 }
 
-export function ColorPicker({ onChange, color }: ColorPickerProps) {
+export default function ColorPicker({ onChange, color }: ColorPickerProps) {
   const [showPopover, setShowPopover] = useState(false);
 
   return (
