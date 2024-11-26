@@ -70,16 +70,14 @@ export default function Footer({
           <Button variant="secondary" asChild>
             <Link href="/resumes">閉じる</Link>
           </Button>
-          <Button disabled={isSaving}>
-            {isSaving ? (
-              <>
-                <span className="animate-spin">⏳</span>
-                保存中...
-              </>
-            ) : (
-              "保存"
+          <p
+            className={cn(
+              "text-muted-foreground opacity-0",
+              isSaving && "opacity-100",
             )}
-          </Button>
+          >
+            保存中...
+          </p>
         </div>
       </div>
     </footer>
