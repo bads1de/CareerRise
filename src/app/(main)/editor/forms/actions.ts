@@ -72,3 +72,55 @@ export async function generateSummary(input: GenerateSummaryInput) {
 
   return aiResponse;
 }
+
+export async function generateWorkExperience(
+  input: GenerateWorkExperienceInput,
+) {
+  // TODO: add block for non-premium users
+
+  const { description } = generateWorkExperienceSchema.parse(input);
+
+  const systemMessage = `
+  あなたは職務経歴書生成AIです。ユーザーの入力に基づいて、単一の職務経歴エントリーを生成することが任務です。
+  回答は以下の構造に従う必要があります。提供されたデータから推測できない項目は省略できますが、新しい項目を追加しないでください。
+
+  役職: <役職>
+  会社名: <会社名>
+  開始日: <形式: YYYY-MM-DD> (提供された場合のみ)
+  終了日: <形式: YYYY-MM-DD> (提供された場合のみ)
+  職務内容: <最適化された説明を箇条書き形式で、役職から推測される場合もあります>
+  `;
+
+  const userMessage = `
+  以下の説明から職務経歴エントリーを提供してください:
+  ${description}
+  `;
+
+  const completion = await openai.chat.completions.create({
+    model: "gemini-1.5-flash",
+    messages: [
+      {
+        role: "system",
+        content: systemMessage,
+      },
+      {
+        role: "user",
+        content: userMessage,
+      },
+    ],
+  });
+
+  const aiResponse = completion.choices[0].message.content;
+
+  if (!aiResponse) {
+    throw new Error("AI response is empty");
+  }
+
+  return {
+    position: aiResponse.match(/役職: (.*)/)?.[1] || "",
+    company: aiResponse.match(/会社名: (.*)/)?.[1] || "",
+    description: (aiResponse.match(/職務内容:([\s\S]*)/)?.[1] || "").trim(),
+    startDate: aiResponse.match(/開始日: (\d{4}-\d{2}-\d{2})/)?.[1],
+    endDate: aiResponse.match(/終了日: (\d{4}-\d{2}-\d{2})/)?.[1],
+  } satisfies WorkExperience;
+}
