@@ -174,7 +174,7 @@ function WorkExperienceSection({ resumeData }: ResumeSectionProps) {
             color: colorHex,
           }}
         >
-          Work experience
+          職歴
         </p>
         {workExperiencesNotEmpty.map((exp, index) => (
           <div key={index} className="break-inside-avoid space-y-1">
@@ -225,7 +225,7 @@ function EducationSection({ resumeData }: ResumeSectionProps) {
             color: colorHex,
           }}
         >
-          Education
+          学歴
         </p>
         {educationsNotEmpty.map((edu, index) => (
           <div key={index} className="break-inside-avoid space-y-1">
@@ -271,7 +271,7 @@ function SkillsSection({ resumeData }: ResumeSectionProps) {
             color: colorHex,
           }}
         >
-          Skills
+          スキル
         </p>
         <div className="flex break-inside-avoid flex-wrap gap-2">
           {skills.map((skill, index) => (
