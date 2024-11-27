@@ -74,7 +74,7 @@ export default function useAutoSaveResume(resumeData: ResumeValues) {
           variant: "destructive",
           description: (
             <div className="space-y-3">
-              <p>Could not save changes.</p>
+              <p>変更を保存できませんでした。</p>
               <Button
                 variant="secondary"
                 onClick={() => {
@@ -82,7 +82,7 @@ export default function useAutoSaveResume(resumeData: ResumeValues) {
                   save();
                 }}
               >
-                Retry
+                再試行
               </Button>
             </div>
           ),

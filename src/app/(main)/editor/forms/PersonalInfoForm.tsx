@@ -93,10 +93,10 @@ export default function PersonalInfoForm({
           <div className="grid grid-cols-2 gap-3">
             <FormField
               control={form.control}
-              name="firstName"
+              name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>名</FormLabel>
+                  <FormLabel>姓</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="山田" />
                   </FormControl>
@@ -106,10 +106,10 @@ export default function PersonalInfoForm({
             />
             <FormField
               control={form.control}
-              name="lastName"
+              name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>姓</FormLabel>
+                  <FormLabel>名</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="太郎" />
                   </FormControl>
