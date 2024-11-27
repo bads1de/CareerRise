@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "4mb",
     },
   },
+  images: {
+    domains: ["hl73ftqtkinootft.public.blob.vercel-storage.com"],
+  },
 };
 
 export default nextConfig;
