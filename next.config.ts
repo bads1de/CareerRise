@@ -7,7 +7,12 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
-    domains: ["hl73ftqtkinootft.public.blob.vercel-storage.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "hl73ftqtkinootft.public.blob.vercel-storage.com",
+      },
+    ],
   },
 };
 
