@@ -44,7 +44,7 @@ export default function GenerateSummaryButton({
       onClick={handleClick}
     >
       <WandSparklesIcon className="size-4" />
-      AIによる自己紹介文生成
+      AI生成
     </LoadingButton>
   );
 }

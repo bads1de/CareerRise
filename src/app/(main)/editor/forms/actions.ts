@@ -17,7 +17,7 @@ export async function generateSummary(input: GenerateSummaryInput) {
 
   const systemMessage = `
     あなたは履歴書生成AIです。ユーザーが提供したデータに基づいて、履歴書のための専門的な自己紹介文を作成することが任務です。
-    回答には要約のみを含め、それ以外の情報は含めないでください。簡潔でプロフェッショナルな内容を心がけてください。
+    回答には要約のみを含め、それ以外の情報は含めないでください。100文字以上で回答してください。プロフェッショナルな内容を心がけてください。
     `;
 
   const userMessage = `
