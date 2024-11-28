@@ -1,13 +1,18 @@
+"use client";
+
 import { Check } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
+import usePremiumModal from "@/hooks/usePremiumModal";
 
 const premiumFeatures = ["AIツール", "最大3つの履歴書"];
 const premiumPlusFeatures = ["無制限の履歴書", "デザインのカスタマイズ"];
 
 export default function PremiumModal() {
+  const { open, setOpen } = usePremiumModal();
+
   return (
-    <Dialog open>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>CareerRise プレミアム</DialogTitle>

@@ -1,11 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { PlusSquare } from "lucide-react";
 import { Metadata } from "next";
-import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import { resumeDataInclude } from "@/lib/types";
 import ResumeItem from "./ResumeItem";
+import CreateResumeButton from "./CreateResumeButton";
 
 export const metadata: Metadata = {
   title: "Resumes",
@@ -29,12 +27,7 @@ export default async function Page() {
 
   return (
     <main className="mx-auto w-full max-w-7xl space-y-6 px-3 py-6">
-      <Button asChild className="mx-auto flex w-fit gap-2">
-        <Link href="/editor">
-          <PlusSquare className="size-6" />
-          新規作成
-        </Link>
-      </Button>
+      <CreateResumeButton canCreate={totalCount < 3} />
       <div className="space-y-1">
         <h1 className="text-3xl font-bold">あなたの履歴書</h1>
         <p>合計: {totalCount}</p>
