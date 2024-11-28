@@ -24,7 +24,6 @@ export async function deleteResume(id: string) {
 
   await prisma.workExperience.deleteMany({ where: { resumeId: id } });
   await prisma.education.deleteMany({ where: { resumeId: id } });
-
   await prisma.resume.delete({ where: { id } });
 
   revalidatePath("/resumes");
