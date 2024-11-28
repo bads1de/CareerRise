@@ -4,6 +4,10 @@ import { Check } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
 import usePremiumModal from "@/hooks/usePremiumModal";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { createCheckoutSession } from "./actions";
+import { env } from "@/env";
 
 const premiumFeatures = ["AIツール", "最大3つの履歴書"];
 const premiumPlusFeatures = ["無制限の履歴書", "デザインのカスタマイズ"];
@@ -11,8 +15,37 @@ const premiumPlusFeatures = ["無制限の履歴書", "デザインのカスタ�
 export default function PremiumModal() {
   const { open, setOpen } = usePremiumModal();
 
+  const { toast } = useToast();
+
+  const [loading, setLoading] = useState(false);
+
+  const handlePremiumClick = async (priceId: string) => {
+    try {
+      setLoading(true);
+
+      const redirectUrl = await createCheckoutSession(priceId);
+      window.location.href = redirectUrl;
+    } catch (error) {
+      console.error("Error creating checkout session:", error);
+      toast({
+        title: "エラー",
+        description: "チェックアウトセッションの作成に失敗しました。",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        if (!loading) {
+          setOpen(open);
+        }
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>CareerRise プレミアム</DialogTitle>
@@ -32,7 +65,16 @@ export default function PremiumModal() {
                   </li>
                 ))}
               </ul>
-              <Button>プレミアムを取得</Button>
+              <Button
+                onClick={() =>
+                  handlePremiumClick(
+                    env.NEXT_PUBLIC_STRIPE_PRICE_ID_PRO_MONTHLY,
+                  )
+                }
+                disabled={loading}
+              >
+                プレミアムを取得
+              </Button>
             </div>
             <div className="border-1 mx-6" />
             <div className="flex w-1/2 flex-col space-y-5">
@@ -47,7 +89,17 @@ export default function PremiumModal() {
                   </li>
                 ))}
               </ul>
-              <Button variant="premium">プレミアムプラスを取得</Button>
+              <Button
+                variant="premium"
+                onClick={() =>
+                  handlePremiumClick(
+                    env.NEXT_PUBLIC_STRIPE_PRICE_ID_PRO_PLUS_MONTHLY,
+                  )
+                }
+                disabled={loading}
+              >
+                プレミアムプラスを取得
+              </Button>
             </div>
           </div>
         </div>
