@@ -1,6 +1,8 @@
 "use server";
 
+import { canCreateResume, canUseCustomizations } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
+import { getUserSubscriptionLevel } from "@/lib/subscription";
 import { resumeSchema, ResumeValues } from "@/lib/validation";
 import { auth } from "@clerk/nextjs/server";
 import { del, put } from "@vercel/blob";
@@ -8,12 +10,18 @@ import path from "path";
 
 /**
  * 履歴書データを保存または更新する関数
- * @param values - 保存する履歴書データ
- * @returns 保存された履歴書データ
+ * @param values - 保存する履歴書データ（ResumeValues型）
+ * @throws {Error} - 以下の場合にエラーを投げる：
+ *  - ユーザーが未認証の場合
+ *  - サブスクリプションレベルで許可された履歴書の最大数に達した場合
+ *  - 指定されたIDの履歴書が見つからない場合
+ *  - サブスクリプションレベルでカスタマイズが許可されていない場合
+ * @returns 保存または更新された履歴書データ
  */
 export async function saveResume(values: ResumeValues) {
   const { id } = values;
 
+  // 受け取ったデータをログ出力（デバッグ用）
   console.log("received values", values);
 
   // スキーマ検証とデータの分割
@@ -21,13 +29,26 @@ export async function saveResume(values: ResumeValues) {
   const { photo, workExperiences, educations, ...resumeValues } =
     resumeSchema.parse(values);
 
+  // ユーザー認証の確認
   const { userId } = await auth();
 
   if (!userId) {
     throw new Error("User not authenticated");
   }
 
-  // TODO: 無料ユーザーの履歴書数制限をチェック
+  // ユーザーのサブスクリプションレベルを取得
+  const subscriptionLevel = await getUserSubscriptionLevel(userId);
+
+  // 新規作成の場合、履歴書の作成上限をチェック
+  if (!id) {
+    const resumeCount = await prisma.resume.count({ where: { userId } });
+
+    if (!canCreateResume(subscriptionLevel, resumeCount)) {
+      throw new Error(
+        "Maximum resume count reached for this subscription level",
+      );
+    }
+  }
 
   // 既存の履歴書データを取得（更新の場合）
   const existingResume = id
@@ -38,8 +59,22 @@ export async function saveResume(values: ResumeValues) {
     throw new Error("Resume not found");
   }
 
+  // カスタマイズ（枠線スタイルや色）の変更があるかチェック
+  const hasCustomizations =
+    (resumeValues.borderStyle &&
+      resumeValues.borderStyle !== existingResume?.borderStyle) ||
+    (resumeValues.colorHex &&
+      resumeValues.colorHex !== existingResume?.colorHex);
+
+  // カスタマイズの権限チェック
+  if (hasCustomizations && !canUseCustomizations(subscriptionLevel)) {
+    throw new Error("Customizations not allowed for this subscription level");
+  }
+
   // 写真の処理
-  // 新規アップロード、削除、または変更なしの3パターンを処理
+  // - 新規アップロード：既存の写真を削除し、新しい写真をBlobストレージに保存
+  // - 写真の削除：既存の写真を削除し、photoUrlをnullに設定
+  // - 変更なし：photoUrlは未定義のまま
   let newPhotoUrl: string | undefined | null = undefined;
 
   if (photo instanceof File) {
@@ -54,7 +89,7 @@ export async function saveResume(values: ResumeValues) {
 
     newPhotoUrl = blob.url;
   } else if (photo === null) {
-    // 写真を削除する場合
+    // 写真を削除する場合、既存の写真をBlobストレージから削除
     if (existingResume?.photoUrl) {
       await del(existingResume.photoUrl);
     }
@@ -63,12 +98,14 @@ export async function saveResume(values: ResumeValues) {
 
   if (id) {
     // 既存の履歴書を更新
+    // - 基本情報の更新
+    // - 写真URLの更新（アップロード、削除、または変更なし）
+    // - 職歴・学歴データの完全な置き換え（既存データを削除して新規作成）
     return prisma.resume.update({
       where: { id },
       data: {
         ...resumeValues,
         photoUrl: newPhotoUrl,
-        // 職歴データの更新：既存のデータを全て削除して新しいデータを作成
         workExperiences: {
           deleteMany: {},
           create: workExperiences?.map((exp) => ({
@@ -77,7 +114,6 @@ export async function saveResume(values: ResumeValues) {
             endDate: exp.endDate ? new Date(exp.endDate) : undefined,
           })),
         },
-        // 学歴データの更新：既存のデータを全て削除して新しいデータを作成
         educations: {
           deleteMany: {},
           create: educations?.map((edu) => ({
@@ -91,12 +127,14 @@ export async function saveResume(values: ResumeValues) {
     });
   } else {
     // 新規履歴書の作成
+    // - 基本情報の保存
+    // - アップロードされた写真のURL保存
+    // - 職歴・学歴データの作成（日付はDate型に変換）
     return prisma.resume.create({
       data: {
         ...resumeValues,
         userId,
         photoUrl: newPhotoUrl,
-        // 職歴データの作成
         workExperiences: {
           create: workExperiences?.map((exp) => ({
             ...exp,
@@ -104,7 +142,6 @@ export async function saveResume(values: ResumeValues) {
             endDate: exp.endDate ? new Date(exp.endDate) : undefined,
           })),
         },
-        // 学歴データの作成
         educations: {
           create: educations?.map((edu) => ({
             ...edu,
