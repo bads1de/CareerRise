@@ -5,26 +5,46 @@ import stripe from "@/lib/stripe";
 import { currentUser } from "@clerk/nextjs/server";
 
 /**
- * Stripeのチェックアウトセッションを作成する
- * @param priceId - 購入する商品のStripe価格ID
+ * Stripeの支払いチェックアウトセッションを作成する
+ *
+ * @param priceId - Stripeの価格ID
+ * @throws {Error} ユーザーが未認証の場合
+ * @throws {Error} チェックアウトセッションの作成に失敗した場合
  * @returns チェックアウトセッションのURL
- * @throws {Error} ユーザーが認証されていない場合、またはセッションの作成に失敗した場合
+ *
+ * @description
+ * 1. 現在のユーザー情報を取得
+ * 2. ユーザーが既存のStripe顧客IDを持っているか確認
+ * 3. 以下の設定でチェックアウトセッションを作成:
+ *   - サブスクリプションモード
+ *   - 成功・キャンセル時のリダイレクトURL
+ *   - 顧客情報（既存顧客IDまたはメールアドレス）
+ *   - ユーザーIDのメタデータ
+ *   - 利用規約の同意確認
  */
 export async function createCheckoutSession(priceId: string) {
-  // 現在のユーザーを取得
   const user = await currentUser();
 
   if (!user) {
-    throw new Error("ユーザーが認証されていません");
+    throw new Error("Unauthorized");
   }
 
-  // Stripeチェックアウトセッションを作成
+  const stripeCustomerId = user.privateMetadata.stripeCustomerId as
+    | string
+    | undefined;
+
   const session = await stripe.checkout.sessions.create({
     line_items: [{ price: priceId, quantity: 1 }],
     mode: "subscription",
     success_url: `${env.NEXT_PUBLIC_BASE_URL}/billing/success`,
     cancel_url: `${env.NEXT_PUBLIC_BASE_URL}/billing`,
-    customer_email: user.emailAddresses[0].emailAddress,
+    customer: stripeCustomerId,
+    customer_email: stripeCustomerId
+      ? undefined
+      : user.emailAddresses[0].emailAddress,
+    metadata: {
+      userId: user.id,
+    },
     subscription_data: {
       metadata: {
         userId: user.id,
@@ -32,7 +52,7 @@ export async function createCheckoutSession(priceId: string) {
     },
     custom_text: {
       terms_of_service_acceptance: {
-        message: `CareerRiseの[利用規約](${env.NEXT_PUBLIC_BASE_URL}/tos)を読み、同意します。`,
+        message: `I have read AI Resume Builder's [terms of service](${env.NEXT_PUBLIC_BASE_URL}/tos) and agree to them.`,
       },
     },
     consent_collection: {
@@ -40,9 +60,8 @@ export async function createCheckoutSession(priceId: string) {
     },
   });
 
-  // セッションURLが存在しない場合はエラーをスロー
   if (!session.url) {
-    throw new Error("チェックアウトセッションの作成に失敗しました");
+    throw new Error("Failed to create checkout session");
   }
 
   return session.url;
