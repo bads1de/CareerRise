@@ -43,12 +43,8 @@ export default function Home() {
               height={150}
               className="mx-auto md:mx-0"
             />
-            <h1 className="text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl">
-              <span className="inline-block bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-                完璧な履歴書
-              </span>
-              <br />
-              を数分で作成
+            <h1 className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent md:text-5xl lg:text-6xl">
+              完璧な履歴書を作成
             </h1>
             <p className="text-xl text-gray-300">
               <span className="font-bold">CareerRise</span>で
@@ -56,15 +52,15 @@ export default function Home() {
               あなたのキャリアの次のステップを、私たちがサポートします。
             </p>
           </motion.div>
-          <motion.div 
-            whileHover={{ scale: 1.05 }} 
+          <motion.div
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="flex justify-center md:justify-end md:self-end md:pb-12"
           >
             <Button
               asChild
               size="lg"
-              className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-lg px-8 py-6 shadow-lg transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.5)]"
+              className="bg-gradient-to-r from-emerald-500 to-cyan-500 px-8 py-6 text-lg shadow-lg transition-all duration-300 hover:from-emerald-600 hover:to-cyan-600 hover:shadow-[0_0_30px_rgba(6,182,212,0.5)]"
             >
               <Link href="/resumes">無料で作成を開始</Link>
             </Button>
