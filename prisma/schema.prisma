@@ -33,9 +33,24 @@ model Resume {
   phone       String?
   email       String?
 
+  // 日本の履歴書用フィールド
+  birthDate       DateTime?
+  gender          String?
+  postalCode      String?
+  address         String?
+  nearestStation  String?
+  maritalStatus   String?
+  dependents      Int?
+  commuteTime     Int?
+  desiredPosition String?
+  desiredSalary   String?
+  motivation      String?
+  healthCondition String?
+
   workExperiences WorkExperience[]
   educations      Education[]
   skills          String[]
+  certifications  String[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

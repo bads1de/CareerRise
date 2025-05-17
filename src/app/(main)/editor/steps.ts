@@ -5,6 +5,7 @@ import WorkExperienceForm from "./forms/WorkExperienceForm";
 import EducationForm from "./forms/EducationForm";
 import SkillsForm from "./forms/SkillsForm";
 import SummaryForm from "./forms/SummaryForm";
+import CertificationsForm from "./forms/CertificationsForm";
 
 export const steps: {
   title: string;
@@ -16,5 +17,6 @@ export const steps: {
   { title: "職歴", component: WorkExperienceForm, key: "work-experience" },
   { title: "学歴", component: EducationForm, key: "education" },
   { title: "スキル", component: SkillsForm, key: "skills" },
+  { title: "資格・免許", component: CertificationsForm, key: "certifications" },
   { title: "概要", component: SummaryForm, key: "summary" },
 ];

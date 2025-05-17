@@ -13,6 +13,15 @@ import { personalInfoSchema, PersonalInfoValues } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { DatePicker } from "@/components/ui/date-picker";
 
 export default function PersonalInfoForm({
   resumeData,
@@ -28,6 +37,19 @@ export default function PersonalInfoForm({
       country: resumeData.country || "",
       phone: resumeData.phone || "",
       email: resumeData.email || "",
+      // 日本の履歴書用フィールド
+      birthDate: resumeData.birthDate || undefined,
+      gender: resumeData.gender || "",
+      postalCode: resumeData.postalCode || "",
+      address: resumeData.address || "",
+      nearestStation: resumeData.nearestStation || "",
+      maritalStatus: resumeData.maritalStatus || "",
+      dependents: resumeData.dependents || undefined,
+      commuteTime: resumeData.commuteTime || undefined,
+      desiredPosition: resumeData.desiredPosition || "",
+      desiredSalary: resumeData.desiredSalary || "",
+      motivation: resumeData.motivation || "",
+      healthCondition: resumeData.healthCondition || "",
     },
   });
 
@@ -180,6 +202,238 @@ export default function PersonalInfoForm({
                 <FormLabel>メールアドレス</FormLabel>
                 <FormControl>
                   <Input {...field} type="email" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <hr className="my-4" />
+          <h3 className="mb-2 text-lg font-medium">日本の履歴書用追加情報</h3>
+
+          <FormField
+            control={form.control}
+            name="birthDate"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>生年月日</FormLabel>
+                <DatePicker
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="生年月日を選択"
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="gender"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>性別</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="性別を選択" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="男性">男性</SelectItem>
+                    <SelectItem value="女性">女性</SelectItem>
+                    <SelectItem value="その他">その他</SelectItem>
+                    <SelectItem value="回答しない">回答しない</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-2 gap-3">
+            <FormField
+              control={form.control}
+              name="postalCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>郵便番号</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="123-4567" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="nearestStation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>最寄り駅</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="東京駅" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>住所</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="東京都千代田区..." />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-2 gap-3">
+            <FormField
+              control={form.control}
+              name="maritalStatus"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>配偶者</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="配偶者の有無" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="有">有</SelectItem>
+                      <SelectItem value="無">無</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="dependents"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>扶養家族数</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={0}
+                      {...field}
+                      value={
+                        field.value === undefined || field.value === null
+                          ? ""
+                          : field.value
+                      }
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value ? parseInt(e.target.value) : undefined,
+                        )
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <FormField
+              control={form.control}
+              name="commuteTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>通勤時間（分）</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={0}
+                      {...field}
+                      value={
+                        field.value === undefined || field.value === null
+                          ? ""
+                          : field.value
+                      }
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value ? parseInt(e.target.value) : undefined,
+                        )
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="desiredSalary"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>希望給与</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="応相談" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="desiredPosition"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>希望職種</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="エンジニア" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="healthCondition"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>健康状態</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="良好" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="motivation"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>志望動機</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    placeholder="志望動機を入力してください"
+                    className="min-h-[100px]"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

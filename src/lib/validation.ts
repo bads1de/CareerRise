@@ -28,6 +28,19 @@ export const personalInfoSchema = z.object({
   country: optionalString,
   phone: optionalString,
   email: optionalString,
+  // 日本の履歴書用フィールド
+  birthDate: z.date().optional().nullable(),
+  gender: optionalString,
+  postalCode: optionalString,
+  address: optionalString,
+  nearestStation: optionalString,
+  maritalStatus: optionalString,
+  dependents: z.number().optional().nullable(),
+  commuteTime: z.number().optional().nullable(),
+  desiredPosition: optionalString,
+  desiredSalary: optionalString,
+  motivation: optionalString,
+  healthCondition: optionalString,
 });
 
 export type PersonalInfoValues = z.infer<typeof personalInfoSchema>;
@@ -73,6 +86,12 @@ export const skillsSchema = z.object({
 
 export type SkillsValues = z.infer<typeof skillsSchema>;
 
+export const certificationsSchema = z.object({
+  certifications: z.array(z.string().trim()).optional(),
+});
+
+export type CertificationsValues = z.infer<typeof certificationsSchema>;
+
 export const summarySchema = z.object({
   summary: optionalString,
 });
@@ -85,6 +104,7 @@ export const resumeSchema = z.object({
   ...workExperienceSchema.shape,
   ...educationSchema.shape,
   ...skillsSchema.shape,
+  ...certificationsSchema.shape,
   ...summarySchema.shape,
   colorHex: optionalString,
   borderStyle: optionalString,
