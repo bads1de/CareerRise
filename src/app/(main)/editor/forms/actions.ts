@@ -64,7 +64,7 @@ export async function generateSummary(input: GenerateSummaryInput) {
     `;
 
   const completion = await openai.chat.completions.create({
-    model: "gemini-1.5-flash",
+    model: "gemini-2.5-flash",
     messages: [
       {
         role: "system",
@@ -120,7 +120,7 @@ export async function generateWorkExperience(
   `;
 
   const completion = await openai.chat.completions.create({
-    model: "gemini-1.5-flash",
+    model: "gemini-2.5-flash",
     messages: [
       {
         role: "system",
