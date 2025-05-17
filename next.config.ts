@@ -14,6 +14,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "react-day-picker/dist/esm": "react-day-picker/dist",
+    };
+    return config;
+  },
 };
 
 export default nextConfig;

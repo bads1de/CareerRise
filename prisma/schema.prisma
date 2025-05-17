@@ -33,7 +33,6 @@ model Resume {
   phone       String?
   email       String?
 
-  // 日本の履歴書用フィールド
   birthDate       DateTime?
   gender          String?
   postalCode      String?

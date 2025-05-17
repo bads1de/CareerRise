@@ -59,12 +59,12 @@ function PersonalInfoHeader({ resumeData }: ResumeSectionProps) {
     photo,
     firstName,
     lastName,
-    jobTitle,
-    city,
-    country,
+    // jobTitle, // 現在未使用
+    // city, // 現在未使用
+    // country, // 現在未使用
     phone,
     email,
-    colorHex,
+    // colorHex, // 現在未使用
     borderStyle,
     // 日本の履歴書用フィールド
     birthDate,
@@ -89,9 +89,13 @@ function PersonalInfoHeader({ resumeData }: ResumeSectionProps) {
     return () => URL.revokeObjectURL(objectUrl);
   }, [photo]);
 
-  const formatJapaneseDate = (date: Date | null | undefined) => {
+  const formatJapaneseDate = (date: Date | string | null | undefined) => {
     if (!date) return "";
-    return format(date, "yyyy年MM月dd日", { locale: ja });
+    return format(
+      typeof date === "string" ? new Date(date) : date,
+      "yyyy年MM月dd日",
+      { locale: ja },
+    );
   };
 
   return (
@@ -283,9 +287,13 @@ function WorkExperienceSection({ resumeData }: ResumeSectionProps) {
     return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
   });
 
-  const formatJapaneseDate = (date: Date | null | undefined) => {
+  const formatJapaneseDate = (date: Date | string | null | undefined) => {
     if (!date) return "";
-    return format(date, "yyyy年MM月", { locale: ja });
+    return format(
+      typeof date === "string" ? new Date(date) : date,
+      "yyyy年MM月",
+      { locale: ja },
+    );
   };
 
   return (
@@ -355,9 +363,13 @@ function EducationSection({ resumeData }: ResumeSectionProps) {
     return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
   });
 
-  const formatJapaneseDate = (date: Date | null | undefined) => {
+  const formatJapaneseDate = (date: Date | string | null | undefined) => {
     if (!date) return "";
-    return format(date, "yyyy年MM月", { locale: ja });
+    return format(
+      typeof date === "string" ? new Date(date) : date,
+      "yyyy年MM月",
+      { locale: ja },
+    );
   };
 
   return (
